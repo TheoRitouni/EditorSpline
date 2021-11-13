@@ -2,8 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bezier : Spline
+
+
+public class Bezier : MonoBehaviour
 {
+    private List<Transform> controlPoint;
+    private int nbrOfPoint = 0;
+
+    private Vector3 posPoint;
+    Bezier(List<Transform> newControlPoint,int newNbrOfPoints)
+    {
+        nbrOfPoint = newNbrOfPoints;
+        controlPoint = newControlPoint;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +26,13 @@ public class Bezier : Spline
     void Update()
     {
         
+    }
+
+    void OnDrawGizmos()
+    {
+        for(int i = 0; i < nbrOfPoint; i++)
+        {
+
+        }
     }
 }
