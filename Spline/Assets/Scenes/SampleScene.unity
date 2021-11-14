@@ -166,13 +166,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c16b335fc12214cbd8e2c9d91ca2e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  typeSpline: 2
   pointControl:
-  - position: {x: 0, y: 0, z: 0}
+  - position: {x: 4.7478075, y: 2.329363, z: 0}
     firstTangent: {x: 0, y: 0, z: 0}
-    secondTangent: {x: 0.50107855, y: 0.6992664, z: -0.22713208}
-  - position: {x: -0.85688245, y: 1.0971285, z: 0}
-    firstTangent: {x: -1.442482, y: 0.4956107, z: -0.16857362}
-    secondTangent: {x: 0, y: 0, z: 0}
+    secondTangent: {x: 4.1932607, y: 3.5144835, z: 0.14292574}
+  - position: {x: 2.700551, y: 5.5255895, z: -1.7077397}
+    firstTangent: {x: 5.197483, y: 8.952477, z: -0.9841461}
+    secondTangent: {x: -5.398169, y: 6.9609427, z: -0.30734253}
+  - position: {x: -4.6568527, y: 5.6892977, z: -1.7077397}
+    firstTangent: {x: -5.067923, y: 3.8281565, z: -0.307868}
+    secondTangent: {x: -0.84274876, y: 0.31425858, z: -0.06715655}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

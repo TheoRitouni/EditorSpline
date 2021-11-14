@@ -2,37 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
-public class Bezier : MonoBehaviour
+public class Bezier 
 {
-    private List<Transform> controlPoint;
-    private int nbrOfPoint = 0;
-
-    private Vector3 posPoint;
-    Bezier(List<Transform> newControlPoint,int newNbrOfPoints)
+    static public Vector3 GetPoint(Vector3 posFirstPt, Vector3 firstTan , Vector3 posSecondPt , Vector3 secondTan, float ratio)
     {
-        nbrOfPoint = newNbrOfPoints;
-        controlPoint = newControlPoint;
+        Vector3 posPoint;
+
+        posPoint = Mathf.Pow(1 - ratio, 3) * posFirstPt +
+            3 * Mathf.Pow(1 - ratio, 2) * ratio * firstTan +
+            3 * (1 - ratio) * Mathf.Pow(ratio, 2) * secondTan +
+            Mathf.Pow(ratio, 3) * posSecondPt;
+
+        return posPoint;
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void OnDrawGizmos()
-    {
-        for(int i = 0; i < nbrOfPoint; i++)
-        {
-
-        }
-    }
 }

@@ -12,16 +12,14 @@ public class EditorSplineCustomUI : Editor
 
         EditorSpline func = (EditorSpline)target;
 
-        if (GUILayout.Button("Add"))
-        {
-            //GUILayout.
-            func.AddPartSpline();
-        }
-        if (GUILayout.Button("ClearAll"))
-        {
-            //GUILayout.
-            func.ClearPartSpline();
-        }
+        //if (GUILayout.Button("Add"))
+        //{
+        //    //GUILayout.
+        //}
+        //if (GUILayout.Button("ClearAll"))
+        //{
+        //    //GUILayout.
+        //}
     }
 
     private void OnEnable()
@@ -50,11 +48,49 @@ public class EditorSplineCustomUI : Editor
             func.pointControl[i + 1].position = endPoint;
             func.pointControl[i + 1].firstTangent = second;
 
-
+            Handles.color = Color.blue;
+            
             Handles.DrawLine(startpos, first);
             Handles.DrawLine(endPoint, second);
 
-            Handles.DrawBezier(startpos, endPoint, first, second, Color.red, null, 2f);
+            Vector3 posPoint = Vector3.zero;
+            Vector3 previousPoint = Vector3.zero;
+
+            Handles.color = Color.red;
+
+            for (int t = 0; t < 100; t++)
+            {
+                switch (func.typeSpline)
+                {
+                    case EditorSpline.TypeSpline.Bezier :
+                    {
+                        posPoint = Bezier.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        break;
+                    }
+                    case EditorSpline.TypeSpline.Hermite:
+                    {
+                        posPoint = Hermite.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        break;
+                    }
+                    case EditorSpline.TypeSpline.BSpline:
+                    {
+                        posPoint = BSpline.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        break;
+                    }
+                    case EditorSpline.TypeSpline.CatmullRom:
+                    {
+                        posPoint = CatmullRom.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        break;
+                    }
+                    default: break;    
+                }
+
+                if (t != 0)
+                    Handles.DrawLine(previousPoint,posPoint);
+
+                previousPoint = posPoint;
+            }
+
         }
     }
 }

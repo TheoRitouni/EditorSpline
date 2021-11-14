@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Spline : MonoBehaviour
 {
+
+    [SerializeField]
     public enum TypeSpline
     {
         Default,
@@ -14,21 +16,11 @@ public class Spline : MonoBehaviour
     };
 
     [SerializeField]
-    private TypeSpline typeSpline;
+    public TypeSpline typeSpline;
     [SerializeField]
     protected List<GameObject> controlPoint;
     [SerializeField]
     protected int nbrOfPoint = 30;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

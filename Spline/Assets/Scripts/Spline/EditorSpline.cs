@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class EditorSpline : MonoBehaviour
 {
+    [SerializeField]
+    public enum TypeSpline
+    {
+        Default,
+        Bezier,
+        Hermite,
+        BSpline,
+        CatmullRom
+    };
+
+    [SerializeField]
+    public TypeSpline typeSpline;
 
     [Serializable]
     public class BezierPointControl 
@@ -26,15 +38,5 @@ public class EditorSpline : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void AddPartSpline()
-    {
-
-    }
-
-    public void ClearPartSpline()
-    {
-
     }
 }
