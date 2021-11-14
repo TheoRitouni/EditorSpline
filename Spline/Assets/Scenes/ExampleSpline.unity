@@ -166,16 +166,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c16b335fc12214cbd8e2c9d91ca2e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  typeSpline: 2
+  typeSpline: 1
   pointControl:
-  - position: {x: 4.7478075, y: 2.329363, z: 0}
+  - position: {x: 12.074192, y: 2.329363, z: 0}
     firstTangent: {x: 0, y: 0, z: 0}
-    secondTangent: {x: 4.1932607, y: 3.5144835, z: 0.14292574}
-  - position: {x: 2.700551, y: 5.5255895, z: -1.7077397}
-    firstTangent: {x: 5.197483, y: 8.952477, z: -0.9841461}
-    secondTangent: {x: -5.398169, y: 6.9609427, z: -0.30734253}
+    secondTangent: {x: 11.488752, y: 4.9315863, z: -0.34063292}
+  - position: {x: 9.652007, y: 5.5255895, z: -1.7077397}
+    firstTangent: {x: 9.845003, y: -0.51739025, z: -3.0334644}
+    secondTangent: {x: 11.159331, y: 14.386832, z: -3.110281}
   - position: {x: -4.6568527, y: 5.6892977, z: -1.7077397}
-    firstTangent: {x: -5.067923, y: 3.8281565, z: -0.307868}
+    firstTangent: {x: -1.1928415, y: 4.4873276, z: 6.451071}
+    secondTangent: {x: -10.004592, y: 10.184215, z: -5.827593}
+  - position: {x: -9.542902, y: 5.6892977, z: -1.7077397}
+    firstTangent: {x: -11.294025, y: 3.7742963, z: -1.6922574}
     secondTangent: {x: -0.84274876, y: 0.31425858, z: -0.06715655}
 --- !u!1 &705507993
 GameObject:

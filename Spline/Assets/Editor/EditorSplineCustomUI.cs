@@ -34,13 +34,13 @@ public class EditorSplineCustomUI : Editor
 
         for (int i  = 0; i < func.pointControl.Count - 1; i++ )
         {
-
+            
             Vector3 startpos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
             Vector3 first = Handles.FreeMoveHandle(func.pointControl[i].secondTangent, Quaternion.identity,0.1f,new Vector3(0.5f,0.5f,0.5f),Handles.SphereHandleCap);
 
 
             Vector3 endPoint = Handles.PositionHandle(func.pointControl[i+1].position, Quaternion.identity);
-            Vector3 second = Handles.FreeMoveHandle(func.pointControl[i+1].firstTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap); ;
+            Vector3 second = Handles.FreeMoveHandle(func.pointControl[i+1].firstTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
 
             func.pointControl[i].position = startpos;
             func.pointControl[i].secondTangent = first;
@@ -49,7 +49,15 @@ public class EditorSplineCustomUI : Editor
             func.pointControl[i + 1].firstTangent = second;
 
             Handles.color = Color.blue;
-            
+
+            //Draw Line mal utilisé à regarder 
+            //if (i != 0 && i != func.pointControl.Count)
+            //{
+            //    func.pointControl[i].firstTangent = -func.pointControl[i].secondTangent;
+            //    Handles.DrawLine(startpos, func.pointControl[i].firstTangent);
+
+            //}
+
             Handles.DrawLine(startpos, first);
             Handles.DrawLine(endPoint, second);
 

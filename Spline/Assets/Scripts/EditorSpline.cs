@@ -29,14 +29,4 @@ public class EditorSpline : MonoBehaviour
     [SerializeField]
     public List<BezierPointControl> pointControl = new List<BezierPointControl>();
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
