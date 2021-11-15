@@ -168,18 +168,55 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeSpline: 1
   pointControl:
-  - position: {x: 12.074192, y: 2.329363, z: 0}
+  - position: {x: -0.1573888, y: 1.170329, z: 0}
     firstTangent: {x: 0, y: 0, z: 0}
-    secondTangent: {x: 11.488752, y: 4.9315863, z: -0.34063292}
-  - position: {x: 9.652007, y: 5.5255895, z: -1.7077397}
-    firstTangent: {x: 9.845003, y: -0.51739025, z: -3.0334644}
-    secondTangent: {x: 11.159331, y: 14.386832, z: -3.110281}
-  - position: {x: -4.6568527, y: 5.6892977, z: -1.7077397}
-    firstTangent: {x: -1.1928415, y: 4.4873276, z: 6.451071}
-    secondTangent: {x: -10.004592, y: 10.184215, z: -5.827593}
-  - position: {x: -9.542902, y: 5.6892977, z: -1.7077397}
-    firstTangent: {x: -11.294025, y: 3.7742963, z: -1.6922574}
-    secondTangent: {x: -0.84274876, y: 0.31425858, z: -0.06715655}
+    secondTangent: {x: -2.104487, y: -0.004603386, z: 0.44783592}
+    show: 0
+  - position: {x: -4.7150955, y: 3.9582684, z: 0}
+    firstTangent: {x: -0.7389008, y: 2.865337, z: -0.22554207}
+    secondTangent: {x: -5.9759903, y: 2.5450778, z: -0.42831564}
+    show: 0
+  - position: {x: -9.35638, y: 2.317533, z: 0}
+    firstTangent: {x: -9.21483, y: 3.895119, z: -1.1978984}
+    secondTangent: {x: 0, y: 0, z: 0}
+    show: 0
+  savePointControl:
+  - position:
+      x: 0
+      y: 0
+      z: 0
+    firstTangent:
+      x: 0
+      y: 0
+      z: 0
+    secondTangent:
+      x: -0.16201472
+      y: 1.7847395
+      z: -0.09308863
+  - position:
+      x: -3.0324943
+      y: 2.0163684
+      z: 0
+    firstTangent:
+      x: -2.056066
+      y: 2.5439253
+      z: -0.094353676
+    secondTangent:
+      x: -3.0535955
+      y: 0.4262681
+      z: 0.041087627
+  - position:
+      x: -5.5397725
+      y: 0.40044194
+      z: 0
+    firstTangent:
+      x: -5.398249
+      y: -1.2252687
+      z: 0.1796217
+    secondTangent:
+      x: 0
+      y: 0
+      z: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

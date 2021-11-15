@@ -8,24 +8,19 @@ public class CatmullRom
     {
         Vector3 posPoint = Vector3.zero;
 
-        Matrix4x4 m = new Matrix4x4();
-        Matrix4x4 pos = new Matrix4x4();
+        Matrix4x4 m = new Matrix4x4(
+            new Vector4(-1/2f,  3/2f, -3/2f,  1/2f),
+            new Vector4( 2/2f, -5/2f,  4/2f, -1/2f),
+            new Vector4(-1/2f,     0,  1/2f,     0),
+            new Vector4(    0,     1,     0,     0));
 
-        Vector4 vecRatio = new Vector4(Mathf.Pow(ratio, 3), ratio * ratio, ratio, 1.0f);
+        Matrix4x4 pos = new Matrix4x4( 
+            new Vector4(pt1.x,pt1.y,pt1.z,0),
+            new Vector4(pt2.x,pt2.y,pt2.z,0),
+            new Vector4(pt3.x,pt3.y,pt3.z,0),
+            new Vector4(pt4.x,pt4.y,pt4.z,0));
 
-
-        pos.SetColumn(0, new Vector4(pt1.x, pt2.x, pt3.x, pt4.x));
-        pos.SetColumn(1, new Vector4(pt1.y, pt2.y, pt3.y, pt4.y));
-        pos.SetColumn(2, new Vector4(pt1.z ,pt2.z, pt3.z, pt4.z));
-        pos.SetColumn(3, new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-
-
-        m.SetColumn(0, new Vector4(-1.0f,  2.0f, -1.0f, 0.0f));
-        m.SetColumn(1, new Vector4( 3.0f, -5.0f,  0.0f, 2.0f));
-        m.SetColumn(2, new Vector4(-3.0f,  4.0f,  1.0f, 0.0f));
-        m.SetColumn(3, new Vector4( 1.0f, -1.0f,  0.0f, 0.0f));
-
-
+        Vector4 vecRatio = new Vector4(ratio * ratio * ratio, ratio * ratio, ratio, 1.0f);
 
         posPoint = (pos * m) * vecRatio;
 

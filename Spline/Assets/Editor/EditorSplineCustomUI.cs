@@ -1,25 +1,69 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(EditorSpline))]
 public class EditorSplineCustomUI : Editor
 {
+    bool showposition = false;
+
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector();
-
+        //DrawDefaultInspector();
         EditorSpline func = (EditorSpline)target;
 
-        //if (GUILayout.Button("Add"))
-        //{
-        //    //GUILayout.
-        //}
-        //if (GUILayout.Button("ClearAll"))
-        //{
-        //    //GUILayout.
-        //}
+        EditorGUILayout.LabelField("============ Select Spline ============");
+        EditorGUILayout.Space();
+
+        func.typeSpline = (EditorSpline.TypeSpline)EditorGUILayout.EnumPopup(func.typeSpline);
+        EditorUtility.SetDirty(func);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("============ Point Control ============");
+        EditorGUILayout.Space();
+
+        EditorGUILayout.LabelField("Point Control number");
+        EditorGUILayout.IntField(func.pointControl.Count);
+
+        showposition = EditorGUILayout.BeginFoldoutHeaderGroup(showposition,"List of Point Control");
+        
+        if(showposition)
+        {
+            EditorGUI.indentLevel = 1;
+            for (int i = 0; i < func.pointControl.Count; i++)
+            {
+                func.pointControl[i].show = EditorGUILayout.Foldout(func.pointControl[i].show, "Point " + (i + 1) );
+
+                if (func.pointControl[i].show)
+                {
+                    EditorGUILayout.Vector3Field("position", func.pointControl[i].position);
+
+                    if (i != 0)
+                        EditorGUILayout.Vector3Field("First Tangent", func.pointControl[i].firstTangent);
+                    if (i != func.pointControl.Count - 1)
+                        EditorGUILayout.Vector3Field("Second Tangent", func.pointControl[i].secondTangent);
+                }
+                EditorGUILayout.Space();
+
+
+            }
+            EditorGUI.indentLevel = 0;
+        }
+
+        EditorGUILayout.EndFoldoutHeaderGroup();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("============ Manager Data ============");
+        EditorGUILayout.Space();
+
+        if (GUILayout.Button("Save"))
+        {
+            func.SavePointControl();
+        }
+        if (GUILayout.Button("Load"))
+        {
+            func.LoadPointControl();
+            EditorUtility.SetDirty(func);
+        }
     }
 
     private void OnEnable()
@@ -34,13 +78,13 @@ public class EditorSplineCustomUI : Editor
 
         for (int i  = 0; i < func.pointControl.Count - 1; i++ )
         {
-            
-            Vector3 startpos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
-            Vector3 first = Handles.FreeMoveHandle(func.pointControl[i].secondTangent, Quaternion.identity,0.1f,new Vector3(0.5f,0.5f,0.5f),Handles.SphereHandleCap);
+            Vector3 startpos, first, endPoint, second;
 
+            startpos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
+            first = Handles.FreeMoveHandle(func.pointControl[i].secondTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
 
-            Vector3 endPoint = Handles.PositionHandle(func.pointControl[i+1].position, Quaternion.identity);
-            Vector3 second = Handles.FreeMoveHandle(func.pointControl[i+1].firstTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
+            endPoint = Handles.PositionHandle(func.pointControl[i + 1].position, Quaternion.identity);
+            second = Handles.FreeMoveHandle(func.pointControl[i + 1].firstTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
 
             func.pointControl[i].position = startpos;
             func.pointControl[i].secondTangent = first;
@@ -49,14 +93,6 @@ public class EditorSplineCustomUI : Editor
             func.pointControl[i + 1].firstTangent = second;
 
             Handles.color = Color.blue;
-
-            //Draw Line mal utilisé à regarder 
-            //if (i != 0 && i != func.pointControl.Count)
-            //{
-            //    func.pointControl[i].firstTangent = -func.pointControl[i].secondTangent;
-            //    Handles.DrawLine(startpos, func.pointControl[i].firstTangent);
-
-            //}
 
             Handles.DrawLine(startpos, first);
             Handles.DrawLine(endPoint, second);
@@ -82,12 +118,12 @@ public class EditorSplineCustomUI : Editor
                     }
                     case EditorSpline.TypeSpline.BSpline:
                     {
-                        posPoint = BSpline.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        posPoint = BSpline.GetPoint( first, startpos, endPoint, second, t / 100f);
                         break;
                     }
                     case EditorSpline.TypeSpline.CatmullRom:
                     {
-                        posPoint = CatmullRom.GetPoint(startpos, first, endPoint, second, t / 100f);
+                        posPoint = CatmullRom.GetPoint( first, startpos, endPoint, second, t / 100f);
                         break;
                     }
                     default: break;    
