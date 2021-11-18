@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class EditorSpline : MonoBehaviour
 {
+    #region DataSpline
+
     [SerializeField]
     public enum TypeSpline
     {
@@ -31,9 +33,126 @@ public class EditorSpline : MonoBehaviour
 
     [Space][SerializeField]
     public List<PointControl> pointControl = new List<PointControl>();
+    #endregion
 
+    #region Movement
+    public bool isActivate = false;
     public GameObject objectFollowSpline;
+    public float speed = 1f;
 
+
+    private Vector3 startpos = Vector3.zero, first = Vector3.zero,
+                endPoint = Vector3.zero, second = Vector3.zero;
+
+
+    private int splineNumber = 0;
+    private bool coroutine = true;
+    private float timeMovement = 0.0f;
+
+    private void Start()
+    {
+#if UNITY_EDITOR
+        UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
+#endif
+    }
+    private void Update()
+    {
+        if (isActivate)
+        {
+            if (coroutine)
+                StartCoroutine(SwitchSplineWithMovement());
+        }
+    }
+    private IEnumerator SwitchSplineWithMovement()
+    {
+
+        coroutine = false;
+
+        GetBSplineAndCatmullRomPointControl(splineNumber);
+        GetBezierAndHermitePointControl(splineNumber);
+
+        Vector3 posPoint = Vector3.zero;
+
+        while (timeMovement <= 1)
+        {
+            timeMovement += speed * Time.deltaTime;
+
+            switch (typeSpline)
+            {
+                case EditorSpline.TypeSpline.Bezier:
+                    {
+                        posPoint = Bezier.GetPoint(startpos, first, endPoint, second, timeMovement);
+                        break;
+                    }
+                case EditorSpline.TypeSpline.Hermite:
+                    {
+                        posPoint = Hermite.GetPoint(startpos, first, endPoint, second, timeMovement);
+                        break;
+                    }
+                case EditorSpline.TypeSpline.BSpline:
+                    {
+                        posPoint = BSpline.GetPoint(startpos, first, endPoint, second, timeMovement);
+                        break;
+                    }
+                case EditorSpline.TypeSpline.CatmullRom:
+                    {
+                        posPoint = CatmullRom.GetPoint(startpos, first, endPoint, second, timeMovement);
+                        break;
+                    }
+                default: break;
+            }
+
+            objectFollowSpline.transform.position = posPoint;
+            yield return new WaitForEndOfFrame();
+        }
+
+        timeMovement = 0f;
+        splineNumber++;
+
+        if ((typeSpline == EditorSpline.TypeSpline.BSpline || typeSpline == EditorSpline.TypeSpline.CatmullRom))
+        {
+
+            if (splineNumber >= pointControl.Count-3)
+                splineNumber = 0;
+        }
+        else
+        {
+            if (splineNumber >= pointControl.Count-1)
+                splineNumber = 0;
+        }
+
+        coroutine = true;
+    }
+
+
+    private void GetBSplineAndCatmullRomPointControl(int splineNumber)
+    {
+        // Manage Point of BSpline and CatmullRom here
+        if ((typeSpline == EditorSpline.TypeSpline.BSpline || typeSpline == EditorSpline.TypeSpline.CatmullRom)
+            && splineNumber < pointControl.Count - 3)
+        {
+            startpos = pointControl[splineNumber].position;
+            first = pointControl[splineNumber + 1].position;
+            endPoint = pointControl[splineNumber + 2].position;
+            second = pointControl[splineNumber + 3].position;
+        }
+    }
+
+    private void GetBezierAndHermitePointControl(int splineNumber)
+    {
+        // Manage Control Point of Bezier and Hermite Spline 
+        if ((typeSpline == EditorSpline.TypeSpline.Bezier || typeSpline == EditorSpline.TypeSpline.Hermite)
+            && splineNumber < pointControl.Count - 1)
+        {
+            startpos = pointControl[splineNumber].position;
+            first = pointControl[splineNumber].second;
+            endPoint = pointControl[splineNumber + 1].position;
+            second = pointControl[splineNumber + 1].first;
+        }
+    }
+    #endregion
+
+    #region DataManagement
     // Manage Data, function Load and Save of Spline
     [Serializable]
     public class SerializableVector3
@@ -123,6 +242,7 @@ public class EditorSpline : MonoBehaviour
             GetPointControlFromSerializable();
 
             inputStream.Close();
+            Debug.Log("Loading Done !");
 
         }
     }
@@ -154,6 +274,9 @@ public class EditorSpline : MonoBehaviour
             outputStream.Close();
 
         }
-    }
 
+        Debug.Log("Saving Done !");
+
+    }
+    #endregion
 }
