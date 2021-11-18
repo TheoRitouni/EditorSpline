@@ -21,8 +21,15 @@ public class EditorSplineCustomUI : Editor
         EditorGUILayout.LabelField("============ Point Control ============");
         EditorGUILayout.Space();
 
-        EditorGUILayout.LabelField("Point Control number");
+        if (func.pointControl.Count <= 3 && func.typeSpline == EditorSpline.TypeSpline.BSpline)
+            EditorGUILayout.LabelField("! BSpline need 4 Control Point !");
+        if (func.pointControl.Count <= 3 && func.typeSpline == EditorSpline.TypeSpline.CatmullRom)
+            EditorGUILayout.LabelField("! CatmullRom need 4 Control Point !");
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Point Control number : ");
         EditorGUILayout.IntField(func.pointControl.Count);
+        EditorGUILayout.EndHorizontal();
 
         showposition = EditorGUILayout.BeginFoldoutHeaderGroup(showposition,"List of Point Control");
         
@@ -35,12 +42,23 @@ public class EditorSplineCustomUI : Editor
 
                 if (func.pointControl[i].show)
                 {
-                    EditorGUILayout.Vector3Field("position", func.pointControl[i].position);
+                    if (func.typeSpline == EditorSpline.TypeSpline.BSpline || func.typeSpline == EditorSpline.TypeSpline.CatmullRom)
+                    {
+                        EditorGUILayout.Vector3Field("Position", func.pointControl[i].position);
+                    }
+                    else
+                    {
+                        EditorGUILayout.Vector3Field("position", func.pointControl[i].position);
 
-                    if (i != 0)
-                        EditorGUILayout.Vector3Field("First Tangent", func.pointControl[i].firstTangent);
-                    if (i != func.pointControl.Count - 1)
-                        EditorGUILayout.Vector3Field("Second Tangent", func.pointControl[i].secondTangent);
+                        if (i != 0)
+                            EditorGUILayout.Vector3Field("First", func.pointControl[i].first);
+                        if (i != func.pointControl.Count - 1)
+                            EditorGUILayout.Vector3Field("Second", func.pointControl[i].second);
+                    }
+                    if (GUILayout.Button("Delete"))
+                    {
+                        func.pointControl.RemoveAt(i);
+                    }
                 }
                 EditorGUILayout.Space();
 
@@ -48,13 +66,41 @@ public class EditorSplineCustomUI : Editor
             }
             EditorGUI.indentLevel = 0;
         }
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.Space();
 
+        if (GUILayout.Button("Add Control Point"))
+        {
+
+            EditorSpline.PointControl point = new EditorSpline.PointControl();
+
+            if (func.pointControl.Count <= 0)
+                func.pointControl.Add(point);
+            else
+            {
+                point.position = func.pointControl[func.pointControl.Count - 1].position;
+                point.first = func.pointControl[func.pointControl.Count - 1].first;
+                point.second = func.pointControl[func.pointControl.Count - 1].second;
+                func.pointControl.Add(point);
+
+            }
+
+        }
+        EditorGUILayout.Space();
+        EditorGUILayout.EndHorizontal();
         EditorGUILayout.EndFoldoutHeaderGroup();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("============ Object Movement ============");
+        EditorGUILayout.Space();
+
+        // WIP 
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("============ Manager Data ============");
         EditorGUILayout.Space();
 
+        EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Save"))
         {
             func.SavePointControl();
@@ -64,6 +110,7 @@ public class EditorSplineCustomUI : Editor
             func.LoadPointControl();
             EditorUtility.SetDirty(func);
         }
+        EditorGUILayout.EndHorizontal();
     }
 
     private void OnEnable()
@@ -76,65 +123,101 @@ public class EditorSplineCustomUI : Editor
     {
         EditorSpline func = (EditorSpline)target;
 
-        for (int i  = 0; i < func.pointControl.Count - 1; i++ )
+        for (int i  = 0; i < func.pointControl.Count ; i++ )
         {
-            Vector3 startpos, first, endPoint, second;
+            Handles.color = Color.white;
 
-            startpos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
-            first = Handles.FreeMoveHandle(func.pointControl[i].secondTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
+            Vector3 startpos = Vector3.zero, first = Vector3.zero, 
+                endPoint = Vector3.zero, second = Vector3.zero;
 
-            endPoint = Handles.PositionHandle(func.pointControl[i + 1].position, Quaternion.identity);
-            second = Handles.FreeMoveHandle(func.pointControl[i + 1].firstTangent, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
+            // Manage Point of BSpline and CatmullRom here
+            if ((func.typeSpline == EditorSpline.TypeSpline.BSpline || func.typeSpline == EditorSpline.TypeSpline.CatmullRom)
+                && i < func.pointControl.Count - 3)
+            { 
+                Vector3 pos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
 
-            func.pointControl[i].position = startpos;
-            func.pointControl[i].secondTangent = first;
+                if( i == func.pointControl.Count - 4)
+                {
+                    Vector3 pos1 = Handles.PositionHandle(func.pointControl[i+1].position, Quaternion.identity);
+                    Vector3 pos2 = Handles.PositionHandle(func.pointControl[i+2].position, Quaternion.identity);
+                    Vector3 pos3 = Handles.PositionHandle(func.pointControl[i+3].position, Quaternion.identity);
+                    func.pointControl[i+1].position = pos1;
+                    func.pointControl[i+2].position = pos2;
+                    func.pointControl[i+3].position = pos3;
 
-            func.pointControl[i + 1].position = endPoint;
-            func.pointControl[i + 1].firstTangent = second;
+                }
 
-            Handles.color = Color.blue;
+                startpos = func.pointControl[i].position;
+                first = func.pointControl[i + 1].position;
+                endPoint = func.pointControl[i + 2].position;
+                second = func.pointControl[i + 3].position;
+             
+                func.pointControl[i].position = pos;
 
-            Handles.DrawLine(startpos, first);
-            Handles.DrawLine(endPoint, second);
+                Handles.color = Color.blue;
+            }
+
+            // Manage Control Point of Bezier and Hermite Spline 
+            if ((func.typeSpline == EditorSpline.TypeSpline.Bezier  || func.typeSpline == EditorSpline.TypeSpline.Hermite) 
+                && i < func.pointControl.Count -1)
+            {
+                startpos = Handles.PositionHandle(func.pointControl[i].position, Quaternion.identity);
+                first = Handles.FreeMoveHandle(func.pointControl[i].second, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
+             
+                endPoint = Handles.PositionHandle(func.pointControl[i + 1].position, Quaternion.identity);
+                second = Handles.FreeMoveHandle(func.pointControl[i + 1].first, Quaternion.identity, 0.1f, new Vector3(0.5f, 0.5f, 0.5f), Handles.SphereHandleCap);
+             
+                func.pointControl[i].position = startpos;
+                func.pointControl[i].second = first;
+             
+                func.pointControl[i + 1].position = endPoint;
+                func.pointControl[i + 1].first = second;
+             
+                Handles.color = Color.blue;
+             
+                Handles.DrawLine(startpos, first);
+                Handles.DrawLine(endPoint, second);
+            }
 
             Vector3 posPoint = Vector3.zero;
             Vector3 previousPoint = Vector3.zero;
 
             Handles.color = Color.red;
-
-            for (int t = 0; t < 100; t++)
+            if (i < func.pointControl.Count - 1)
             {
-                switch (func.typeSpline)
+                for (int t = 0; t < 100; t++)
                 {
-                    case EditorSpline.TypeSpline.Bezier :
+                    switch (func.typeSpline)
                     {
-                        posPoint = Bezier.GetPoint(startpos, first, endPoint, second, t / 100f);
-                        break;
+                        case EditorSpline.TypeSpline.Bezier:
+                            {
+                                posPoint = Bezier.GetPoint(startpos, first, endPoint, second, t / 100f);
+                                break;
+                            }
+                        case EditorSpline.TypeSpline.Hermite:
+                            {
+                                posPoint = Hermite.GetPoint(startpos, first, endPoint, second, t / 100f);
+                                break;
+                            }
+                        case EditorSpline.TypeSpline.BSpline:
+                            {
+                                posPoint = BSpline.GetPoint(startpos, first, endPoint, second, t / 100f);
+                                break;
+                            }
+                        case EditorSpline.TypeSpline.CatmullRom:
+                            {
+                                posPoint = CatmullRom.GetPoint(startpos, first, endPoint, second, t / 100f);
+                                break;
+                            }
+                        default: break;
                     }
-                    case EditorSpline.TypeSpline.Hermite:
-                    {
-                        posPoint = Hermite.GetPoint(startpos, first, endPoint, second, t / 100f);
-                        break;
-                    }
-                    case EditorSpline.TypeSpline.BSpline:
-                    {
-                        posPoint = BSpline.GetPoint( first, startpos, endPoint, second, t / 100f);
-                        break;
-                    }
-                    case EditorSpline.TypeSpline.CatmullRom:
-                    {
-                        posPoint = CatmullRom.GetPoint( first, startpos, endPoint, second, t / 100f);
-                        break;
-                    }
-                    default: break;    
+
+                    if (t != 0)
+                        Handles.DrawLine(previousPoint, posPoint);
+
+                    previousPoint = posPoint;
                 }
-
-                if (t != 0)
-                    Handles.DrawLine(previousPoint,posPoint);
-
-                previousPoint = posPoint;
             }
-
         }
     }
 }

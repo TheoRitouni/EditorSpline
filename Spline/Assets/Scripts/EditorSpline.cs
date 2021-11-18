@@ -24,15 +24,17 @@ public class EditorSpline : MonoBehaviour
     public class PointControl 
     {
         public Vector3 position = Vector3.zero;
-        public Vector3 firstTangent = Vector3.zero;
-        public Vector3 secondTangent = Vector3.zero;
+        public Vector3 first = Vector3.zero;
+        public Vector3 second = Vector3.zero;
         public bool show = false;
     }
 
     [Space][SerializeField]
     public List<PointControl> pointControl = new List<PointControl>();
 
+    public GameObject objectFollowSpline;
 
+    // Manage Data, function Load and Save of Spline
     [Serializable]
     public class SerializableVector3
     {
@@ -58,28 +60,28 @@ public class EditorSpline : MonoBehaviour
     public class SerializablePointControl
     {
         public SerializableVector3 position = new SerializableVector3();
-        public SerializableVector3 firstTangent= new SerializableVector3();
-        public SerializableVector3 secondTangent = new SerializableVector3();
+        public SerializableVector3 first= new SerializableVector3();
+        public SerializableVector3 second = new SerializableVector3();
 
         public SerializablePointControl(Vector3 pos, Vector3 firstTan, Vector3 secondTan)
         {
             position.ConvertToSerializableVector3(pos);
-            firstTangent.ConvertToSerializableVector3(firstTan);
-            secondTangent.ConvertToSerializableVector3(secondTan);
+            first.ConvertToSerializableVector3(firstTan);
+            second.ConvertToSerializableVector3(secondTan);
         }
 
         public PointControl GetPointControl()
         {
             PointControl newPoint = new PointControl();
             newPoint.position = position.GetVector3();
-            newPoint.firstTangent = firstTangent.GetVector3();
-            newPoint.secondTangent = secondTangent.GetVector3();
+            newPoint.first = first.GetVector3();
+            newPoint.second = second.GetVector3();
             return newPoint;
         }
     }
 
     [HideInInspector]
-    public List<SerializablePointControl> savePointControl = new List<SerializablePointControl>();
+    public List<SerializablePointControl> savePointControl;
 
     private string saveFile;
     private BinaryFormatter converter = new BinaryFormatter();
@@ -91,7 +93,7 @@ public class EditorSpline : MonoBehaviour
 
         foreach(PointControl point in pointControl)
         {
-            SerializablePointControl newPoint = new SerializablePointControl(point.position, point.firstTangent,point.secondTangent);
+            SerializablePointControl newPoint = new SerializablePointControl(point.position, point.first,point.second);
             savePointControl.Add(newPoint);
         }
     }
@@ -127,6 +129,8 @@ public class EditorSpline : MonoBehaviour
     public void SavePointControl()
     {
         Debug.Log("Saving ... ");
+
+        savePointControl = new List<SerializablePointControl>();
 
         ConvertPointControlOnSerializable();
         if (File.Exists(saveFile))
