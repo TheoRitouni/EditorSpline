@@ -5,8 +5,27 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class EditorSpline : MonoBehaviour
 {
+    private void Start()
+    {
+#if UNITY_EDITOR
+        UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
+#endif
+    }
+    private void Update()
+    {
+        if (isActivate)
+        {
+            if (coroutine)
+                StartCoroutine(SwitchSplineWithMovement());
+        }
+
+        if (lineRealTime)
+            LineRendererGenerate();
+    }
+
     #region DataSpline
 
     [SerializeField]
@@ -35,12 +54,14 @@ public class EditorSpline : MonoBehaviour
     public List<PointControl> pointControl = new List<PointControl>();
     #endregion
 
-    #region Movement
+    #region MovementAndLineRenderer
+
+    // Movement Data
     public bool isActivate = false;
     public GameObject objectFollowSpline;
     public float speed = 1f;
 
-
+    // Tools Data
     private Vector3 startpos = Vector3.zero, first = Vector3.zero,
                 endPoint = Vector3.zero, second = Vector3.zero;
 
@@ -48,21 +69,7 @@ public class EditorSpline : MonoBehaviour
     private int splineNumber = 0;
     private bool coroutine = true;
     private float timeMovement = 0.0f;
-
-    private void Start()
-    {
-#if UNITY_EDITOR
-        UnityEditor.SceneView.FocusWindowIfItsOpen(typeof(UnityEditor.SceneView));
-#endif
-    }
-    private void Update()
-    {
-        if (isActivate)
-        {
-            if (coroutine)
-                StartCoroutine(SwitchSplineWithMovement());
-        }
-    }
+   
     private IEnumerator SwitchSplineWithMovement()
     {
 
@@ -77,30 +84,7 @@ public class EditorSpline : MonoBehaviour
         {
             timeMovement += speed * Time.deltaTime;
 
-            switch (typeSpline)
-            {
-                case EditorSpline.TypeSpline.Bezier:
-                    {
-                        posPoint = Bezier.GetPoint(startpos, first, endPoint, second, timeMovement);
-                        break;
-                    }
-                case EditorSpline.TypeSpline.Hermite:
-                    {
-                        posPoint = Hermite.GetPoint(startpos, first, endPoint, second, timeMovement);
-                        break;
-                    }
-                case EditorSpline.TypeSpline.BSpline:
-                    {
-                        posPoint = BSpline.GetPoint(startpos, first, endPoint, second, timeMovement);
-                        break;
-                    }
-                case EditorSpline.TypeSpline.CatmullRom:
-                    {
-                        posPoint = CatmullRom.GetPoint(startpos, first, endPoint, second, timeMovement);
-                        break;
-                    }
-                default: break;
-            }
+            posPoint = SwitchSpline(startpos, first, endPoint, second,timeMovement);
 
             objectFollowSpline.transform.position = posPoint;
             yield return new WaitForEndOfFrame();
@@ -124,6 +108,40 @@ public class EditorSpline : MonoBehaviour
         coroutine = true;
     }
 
+    #endregion
+
+    #region SplineCalculate
+    private Vector3 SwitchSpline(Vector3 pt1, Vector3 pt2, Vector3 pt3, Vector3 pt4, float step)
+    {
+        Vector3 posPoint = Vector3.zero;
+
+        switch (typeSpline)
+        {
+            case EditorSpline.TypeSpline.Bezier:
+                {
+                    posPoint = Bezier.GetPoint(pt1, pt2, pt3, pt4, step);
+                    break;
+                }
+            case EditorSpline.TypeSpline.Hermite:
+                {
+                    posPoint = Hermite.GetPoint(pt1, pt2, pt3, pt4, step);
+                    break;
+                }
+            case EditorSpline.TypeSpline.BSpline:
+                {
+                    posPoint = BSpline.GetPoint(pt1, pt2, pt3, pt4, step);
+                    break;
+                }
+            case EditorSpline.TypeSpline.CatmullRom:
+                {
+                    posPoint = CatmullRom.GetPoint(pt1, pt2, pt3, pt4, step);
+                    break;
+                }
+            default: break;
+        }
+
+        return posPoint;
+    }
 
     private void GetBSplineAndCatmullRomPointControl(int splineNumber)
     {
@@ -150,6 +168,45 @@ public class EditorSpline : MonoBehaviour
             second = pointControl[splineNumber + 1].first;
         }
     }
+    #endregion
+
+    #region LineRenderer
+    // Line Rendere Data 
+    public LineRenderer lineRenderer;
+    public bool lineRealTime = false;
+    public void CreateALineRender()
+    {
+        lineRenderer = gameObject.AddComponent(typeof(LineRenderer)) as LineRenderer;
+    }
+
+    public void RemoveLineRenderer()
+    {
+        if (lineRenderer)
+            DestroyImmediate(lineRenderer);
+    }
+    public void LineRendererGenerate()
+    {
+        List<Vector3> listPoint = new List<Vector3>();
+        for (int i = 0; i < pointControl.Count; i++)
+        {
+
+            GetBSplineAndCatmullRomPointControl(i);
+            GetBezierAndHermitePointControl(i);
+
+            for (int t = 0; t <= 100; t++)
+            {
+
+                Vector3 posPoint = Vector3.zero;
+
+                posPoint = SwitchSpline(startpos, first, endPoint, second, t / 100f);
+
+                listPoint.Add(posPoint);
+            }
+        }
+        lineRenderer.positionCount = listPoint.Count;
+        lineRenderer.SetPositions(listPoint.ToArray());
+    }
+
     #endregion
 
     #region DataManagement

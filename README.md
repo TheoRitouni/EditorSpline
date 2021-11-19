@@ -28,15 +28,20 @@ Here is a description of the parts and their options to help you.
 - **Select Spline** in this section you can select the type of spline you want to model.  
 
 - **Point Control** this section allows you to create the control points that influence your spline.
-The first piece of information available to you is the number of control points you have created.  
-***Warning*** on BSpline and CatmullRom splines you need a minimum of four control points. 
+The first piece of information available to you is the number of control points you have created.
 Then you have the list of points with their coordinates and a button to delete the point.
 Just below you have the button to add points.  
+***Warning*** on BSpline and CatmullRom splines you need a minimum of four control points. 
 
 - **Object Movement** you have the possibility to select a "GameObject" to move it according to the curve.
 The first option is a boolean to activate the move. The next one is an area to place the object you want to move.
 you want to move. And finally the speed of the moving object.  
 ***Warning*** the object moves only when you launch Unity in play mode.
+
+- **Line Renderer** you can generate a real spline plot with this tool. It consists of two buttons 
+that can add and remove the "LineRenderer" component that does the plotting. Then you have a visual of the
+component and a boolean allowing you to plot the spline in real time. Finally you have a button 
+that generates the spline as soon as you press it.    
 
 - **Manager Data** The last section allows you to save the curve at the moment you click on the save button.
 The second button allows you to return to the first state.
@@ -49,6 +54,7 @@ In the provided project you have an example map at the following path "Assets\Sc
 - Display of curves
 - Real time modification of control points
 - Saving and loading data
+- Real plot of the spline in the game window (line renderer)
 - Animation of an object along a spline
 - Add / Remove control points
 - Changing the type of spline in real time

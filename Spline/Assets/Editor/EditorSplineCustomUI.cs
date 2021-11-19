@@ -13,30 +13,67 @@ public class EditorSplineCustomUI : Editor
         //DrawDefaultInspector();
         func = (EditorSpline)target;
 
-        EditorGUILayout.LabelField("============ Select Spline");
+        EditorGUILayout.LabelField("** Select Spline **", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
         func.typeSpline = (EditorSpline.TypeSpline)EditorGUILayout.EnumPopup(func.typeSpline);
         EditorUtility.SetDirty(func);
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("============ Point Control ");
+        EditorGUILayout.LabelField("** Point Control **", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
         UIPointControl();
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("============ Object Movement ");
+        EditorGUILayout.LabelField("** Object Movement **", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
         // WIP 
-
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Activate Movement : ");
         func.isActivate = EditorGUILayout.Toggle(func.isActivate);
+        EditorGUILayout.EndHorizontal();
         func.objectFollowSpline = (GameObject)EditorGUILayout.ObjectField("Object Movement", func.objectFollowSpline, typeof(GameObject), true);
         func.speed = EditorGUILayout.FloatField(func.speed);
 
+
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("============ Manager Data ");
+        EditorGUILayout.LabelField("** Line Renderer **", EditorStyles.boldLabel);
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal();
+        if (GUILayout.Button("Add Component"))
+        {
+            func.CreateALineRender();
+        }
+        if (GUILayout.Button("Remove Component"))
+        {
+            func.RemoveLineRenderer();
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space();
+
+        func.lineRenderer = (LineRenderer)EditorGUILayout.ObjectField("Line Renderer Object", func.lineRenderer, typeof(LineRenderer), true);
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField("Real Time Update Spline : ");
+        func.lineRealTime = EditorGUILayout.Toggle(func.lineRealTime);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space();
+
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Generate Line"))
+        {
+            func.LineRendererGenerate();
+        }
+        EditorGUILayout.Space();
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("** Manager Data **", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
         EditorGUILayout.BeginHorizontal();
